@@ -1,2 +1,2 @@
 # osivia-sample-transaction
-differents use cases of transaction calls from portlets
+this web application differents use cases of transaction calls from portlets
