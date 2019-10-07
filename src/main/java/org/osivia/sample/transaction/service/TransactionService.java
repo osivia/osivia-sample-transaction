@@ -89,6 +89,16 @@ public interface TransactionService {
     CommandNotification createBlob(PortalControllerContext portalControllerContext) throws PortletException;
     
     /**
+     * Create file
+     * 
+     * @param portalControllerContext
+     * @throws PortletException
+     */
+    CommandNotification createFile(PortalControllerContext portalControllerContext) throws PortletException;
+   
+    
+    
+    /**
      * Create blobs
      * 
      * @param portalControllerContext

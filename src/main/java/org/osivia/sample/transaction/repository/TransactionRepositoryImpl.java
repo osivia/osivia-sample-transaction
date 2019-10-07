@@ -25,6 +25,7 @@ import org.osivia.sample.transaction.repository.command.CreateAndTxUpdateCommand
 import org.osivia.sample.transaction.repository.command.CreateAndUpdateCommand;
 import org.osivia.sample.transaction.repository.command.CreateBlobCommand;
 import org.osivia.sample.transaction.repository.command.CreateBlobsCommand;
+import org.osivia.sample.transaction.repository.command.CreateFileCommand;
 import org.osivia.sample.transaction.repository.command.DeleteAndRollbackCommand;
 import org.osivia.sample.transaction.repository.command.FetchPublicationInfoCommand;
 import org.osivia.sample.transaction.repository.command.OneCreationCommand;
@@ -277,6 +278,28 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         nuxeoController.setAsynchronousCommand(false);
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateBlobCommand(configuration,UUID.randomUUID().toString()));
+        return commandNotification;
+    }
+    
+    
+    
+    /** 
+     * {@inheritDoc}
+     * @throws PortletException 
+     */
+    @Override
+    public CommandNotification createFile(PortalControllerContext portalControllerContext) throws PortletException {
+        
+        // Configuration
+        Configuration configuration = this.getConfiguration(portalControllerContext);
+        
+        // Nuxeo controller
+        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
+        nuxeoController.setAsynchronousCommand(false);
+        
+        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateFileCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
     }
     

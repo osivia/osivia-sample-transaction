@@ -239,6 +239,23 @@ public class ViewTransactionController extends CMSPortlet implements PortletConf
         this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
     }
     
+    
+    /**
+     * Create file action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @throws PortletException
+     */
+    @ActionMapping(value = "createfile")
+    public void createFile(ActionRequest request, ActionResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        CommandNotification commandNotification = this.service.createFile(portalControllerContext);
+        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
+    }
+        
     /**
      * Create blobs action mapping.
      * 

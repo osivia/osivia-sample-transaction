@@ -16,6 +16,7 @@
 
 <portlet:actionURL name="deleteandrollback" var="deleteAndRollbackUrl" />
 <portlet:actionURL name="createblob" var="createBlobUrl" />
+<portlet:actionURL name="createfile" var="createFileUrl" />
 <portlet:actionURL name="createblobs" var="createBlobsUrl" />
 <portlet:actionURL name="fetchPublicationInfo" var="fetchPublicationInfoUrl" />
 <portlet:actionURL name="updateAndRollback" var="updateAndRollbackUrl" />
@@ -53,6 +54,12 @@
     
     <a href="${createBlobUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="CREATE_BLOB" /></span>
+    </a>
+    <br/><br/>
+    
+        
+    <a href="${createFileUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="CREATE_FILE" /></span>
     </a>
     <br/><br/>
     

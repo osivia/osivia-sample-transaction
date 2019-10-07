@@ -1,5 +1,7 @@
 package org.osivia.sample.transaction.repository.command;
 
+import java.util.Calendar;
+
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -24,18 +26,6 @@ public class CreateAndTxUpdateCommand implements INuxeoCommand {
         this.suffix = suffix;
     }
 
-    private String createTransaction(Session session) throws Exception {
-        String txId = null;
-
-        // Start Tx
-        Object object = session.newRequest("Repository.StartTransaction").execute();
-        if (object instanceof FileBlob) {
-            FileBlob txIdAsBlob = (FileBlob) object;
-            txId = IOUtils.toString(txIdAsBlob.getStream(), "UTF-8");
-            System.out.println("[TXID]: " + txId + "\n");
-        }
-        return txId;
-    }
 
     /**
      * {@inheritDoc}
@@ -48,8 +38,11 @@ public class CreateAndTxUpdateCommand implements INuxeoCommand {
 
 
         try {
+            
+            Calendar now = Calendar.getInstance();
 
-            txId = createTransaction(session);
+
+            txId = TransactionUtils.createTransaction(session);
 
             // Fist step: creation
             OperationRequest operationCreateRequest = session.newRequest("Document.Create");
@@ -60,7 +53,8 @@ public class CreateAndTxUpdateCommand implements INuxeoCommand {
             
             // Then, update document
             PropertyMap propertyMap = new PropertyMap();
-            propertyMap.set("ttc:keywords", "testtx1");
+            propertyMap.set("ttc:keywords", "KEYWORD1");
+            propertyMap.set("dc:title", "note AAAA "+now.get(Calendar.MINUTE) +":"+now.get(Calendar.SECOND));            
             
             OperationRequest operationUpdateRequest = session.newRequest("Document.Update");
             createdDoc = (Document) operationUpdateRequest.setHeader("Tx-conversation-id", txId).setInput(createdDoc).set("properties", propertyMap)
@@ -70,12 +64,12 @@ public class CreateAndTxUpdateCommand implements INuxeoCommand {
             session.newRequest("Repository.CommitOrRollbackTransaction").setHeader("Tx-conversation-id", txId).execute();
 
             // 2nd transaction
-            txId = createTransaction(session);
+            txId = TransactionUtils.createTransaction(session);
 
             // Then, update in the new transaction
             propertyMap = new PropertyMap();
-            propertyMap.set("ttc:keywords", "testtx2");
-
+            propertyMap.set("ttc:keywords", "KEYWORD2");
+            propertyMap.set("dc:title", "note BBBB "+now.get(Calendar.MINUTE) +":"+now.get(Calendar.SECOND));      
 
             operationUpdateRequest = session.newRequest("Document.Update");
             Document createdDoc2 = (Document) operationUpdateRequest.setHeader("Tx-conversation-id", txId).setInput(createdDoc).set("properties", propertyMap)
