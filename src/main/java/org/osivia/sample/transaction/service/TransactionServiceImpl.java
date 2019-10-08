@@ -119,8 +119,8 @@ public class TransactionServiceImpl implements TransactionService {
      * {@inheritDoc}
      */
     @Override
-    public CommandNotification createFile(PortalControllerContext portalControllerContext) throws PortletException {
-        return this.repository.createFile(portalControllerContext);
+    public CommandNotification createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException {
+        return this.repository.createFile(portalControllerContext, suffix);
         
     }
     

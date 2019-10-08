@@ -35,6 +35,8 @@ import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandServiceFactory;
+
 
 /**
  * Transaction repository implementation.
@@ -148,16 +150,15 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
         
-        // Nuxeo controller
-        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+        NuxeoController nuxeoController = getNuxeoController(portalControllerContext);
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new OneCreationCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
         
     }
+
+
+
     
     /** 
      * {@inheritDoc}
@@ -171,9 +172,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new SeveralCreationCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
@@ -192,9 +191,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateAndUpdateCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
@@ -213,9 +210,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateAndTxUpdateCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
@@ -233,9 +228,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+;
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateAndRollbackCommand(configuration, UUID.randomUUID().toString()));
         return commandNotification;
@@ -253,9 +246,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new DeleteAndRollbackCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
@@ -273,9 +264,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateBlobCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
@@ -288,18 +277,16 @@ public class TransactionRepositoryImpl implements TransactionRepository {
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createFile(PortalControllerContext portalControllerContext) throws PortletException {
+    public CommandNotification createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException {
         
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateFileCommand(configuration,UUID.randomUUID().toString()));
+        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateFileCommand(configuration,suffix));
         return commandNotification;
     }
     
@@ -315,9 +302,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateBlobsCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
@@ -335,9 +320,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new FetchPublicationInfoCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
@@ -355,9 +338,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         
         // Nuxeo controller
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_SUPERUSER);
-        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT);
-        nuxeoController.setAsynchronousCommand(false);
+
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new UpdateAndRollbackCommand(configuration,UUID.randomUUID().toString()));
         return commandNotification;
@@ -373,7 +354,16 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         PortletRequest request = portalControllerContext.getRequest();
         PortletResponse response = portalControllerContext.getResponse();
         PortletContext portletContext = portalControllerContext.getPortletCtx();
-        return new NuxeoController(request, response, portletContext);
+        NuxeoController nuxeoController = new NuxeoController(request, response, portletContext);
+
+
+        nuxeoController.setAuthType(NuxeoCommandContext.AUTH_TYPE_USER);
+        nuxeoController.setCacheType(CacheInfo.CACHE_SCOPE_NONE);
+        nuxeoController.setAsynchronousCommand(false);
+
+
+        return nuxeoController;
+
     }
 
 }

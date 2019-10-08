@@ -12,6 +12,7 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
@@ -252,8 +253,16 @@ public class ViewTransactionController extends CMSPortlet implements PortletConf
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        CommandNotification commandNotification = this.service.createFile(portalControllerContext);
+        CommandNotification commandNotification = this.service.createFile(portalControllerContext, request.getParameter("suffix"));
         this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
+ 
+        
+        // Refresh navigation
+        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
+        
+        // Update public render parameter for associated portlets refresh
+        response.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
+
     }
         
     /**

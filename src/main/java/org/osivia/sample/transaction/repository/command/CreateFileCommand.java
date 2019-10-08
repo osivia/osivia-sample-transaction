@@ -35,25 +35,37 @@ public class CreateFileCommand implements INuxeoCommand {
     @Override
     public Object execute(Session session) throws Exception {
 
+        boolean transaction = true;
+
         CommandNotification commandNotification;
         String txId = null;
         try {
 
             Calendar now = Calendar.getInstance();
-            
+
             // Creation
             OperationRequest operationRequest = session.newRequest("Document.Create");
-
-            Document createdDoc = (Document) operationRequest.setHeader("Tx-conversation-id", txId).setInput(new PathRef(configuration.getPath()))
+            operationRequest.setHeader("nx_es_sync", String.valueOf(true));
+            if( transaction)
+                operationRequest.setHeader("Tx-conversation-id", txId);
+            Document createdDoc = (Document) operationRequest.setInput(new PathRef(configuration.getPath()))
                     .set("type", "File").execute();
+            
+            
             System.out.println("Creation DONE: " + createdDoc.getPath() + " | " + createdDoc.getInputRef() + "\n");
 
 
             PropertyMap properties = new PropertyMap();
-            properties.set("dc:title", "file "+now.get(Calendar.HOUR)+":"+now.get(Calendar.MINUTE) +":"+now.get(Calendar.SECOND));      
+            String end = "-commitx1";
+            if (suffix != null)
+                end += "-" + suffix;
+            properties.set("dc:title", "file " + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE) + ":" + now.get(Calendar.SECOND) + end);
 
             OperationRequest operationUpdateRequest = session.newRequest("Document.Update");
-            operationUpdateRequest.setHeader("Tx-conversation-id", txId).setInput(createdDoc).set("properties", properties).execute();
+            operationUpdateRequest.setHeader("nx_es_sync", String.valueOf(true));
+            if (transaction)
+                operationUpdateRequest.setHeader("Tx-conversation-id", txId);
+            operationUpdateRequest.setInput(createdDoc).set("properties", properties).execute();
 
 
             URL exampleFile = this.getClass().getResource("/WEB-INF/classes/osivia.docx");
@@ -62,32 +74,52 @@ public class CreateFileCommand implements INuxeoCommand {
 
 
             OperationRequest req = session.newRequest("Blob.Attach").setInput(blob).set("document", createdDoc.getPath());
-            req.setHeader("Tx-conversation-id", txId);
+            if (transaction)
+                req.setHeader("Tx-conversation-id", txId);
             req.set("xpath", "file:content");
+
+            req.setHeader("nx_es_sync", String.valueOf(true));
             FileBlob blobAdded = (FileBlob) req.execute();
 
 
             // First commit
-            session.newRequest("Repository.CommitOrRollbackTransaction").setHeader("Tx-conversation-id", txId).execute();
+            if( transaction)             
+                session.newRequest("Repository.CommitOrRollbackTransaction").setHeader("Tx-conversation-id", txId).execute();
 
             // 2nd transaction
-            txId = TransactionUtils.createTransaction(session);
-            
-            
-             exampleFile = this.getClass().getResource("/WEB-INF/classes/empty.docx");
-             file = new File(exampleFile.getFile());
-             blob = new FileBlob(file, "almost_empty", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+            if (transaction)
+                txId = TransactionUtils.createTransaction(session);
+
+            properties = new PropertyMap();
+            end = "-commitx2";
+            if (suffix != null)
+                end += "-" + suffix;
+            properties.set("dc:title", "file " + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE) + ":" + now.get(Calendar.SECOND) + end);
+
+            operationUpdateRequest = session.newRequest("Document.Update");
+            if (transaction)
+                operationUpdateRequest.setHeader("Tx-conversation-id", txId);
+            operationUpdateRequest.setInput(createdDoc).set("properties", properties).execute();
+            operationUpdateRequest.setHeader("nx_es_sync", String.valueOf(true));
+
+
+            exampleFile = this.getClass().getResource("/WEB-INF/classes/empty.docx");
+            file = new File(exampleFile.getFile());
+            blob = new FileBlob(file, "almost_empty", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
 
             req = session.newRequest("Blob.Attach").setInput(blob).set("document", createdDoc.getPath());
             // req.setHeader(Constants.HEADER_NX_VOIDOP, "true");
-            req.setHeader("Tx-conversation-id", txId);
+            if (transaction)
+                req.setHeader("Tx-conversation-id", txId);
             req.set("xpath", "file:content");
+            req.setHeader("nx_es_sync", String.valueOf(true));
             blobAdded = (FileBlob) req.execute();
 
-            
+
             // And rollback
-            session.newRequest("Repository.MarkTransactionAsRollback").setHeader("Tx-conversation-id", txId).execute();
+            if (transaction)
+                session.newRequest("Repository.MarkTransactionAsRollback").setHeader("Tx-conversation-id", txId).execute();
 
 
             System.out.println("Creation File DONE : " + blobAdded.getInputRef());
@@ -95,13 +127,15 @@ public class CreateFileCommand implements INuxeoCommand {
 
         } catch (Exception e) {
             if (txId != null) {
-                session.newRequest("Repository.MarkTransactionAsRollback").setHeader("Tx-conversation-id", txId).execute();
+                if (transaction)
+                    session.newRequest("Repository.MarkTransactionAsRollback").setHeader("Tx-conversation-id", txId).execute();
                 System.out.println(e);
             }
             commandNotification = new CommandNotification(false, "Erreur, Rollback nécessaire, cause:" + e.toString());
         } finally {
-            if( txId != null)
-                session.newRequest("Repository.CommitOrRollbackTransaction").setHeader("Tx-conversation-id", txId).execute();
+            if (txId != null)
+                if (transaction)
+                    session.newRequest("Repository.CommitOrRollbackTransaction").setHeader("Tx-conversation-id", txId).execute();
         }
 
         return commandNotification;
@@ -109,6 +143,6 @@ public class CreateFileCommand implements INuxeoCommand {
 
     @Override
     public String getId() {
-        return "transaction" + suffix;
+        return null;
     }
 }

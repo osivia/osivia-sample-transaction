@@ -94,7 +94,7 @@ public interface TransactionService {
      * @param portalControllerContext
      * @throws PortletException
      */
-    CommandNotification createFile(PortalControllerContext portalControllerContext) throws PortletException;
+    CommandNotification createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
    
     
     

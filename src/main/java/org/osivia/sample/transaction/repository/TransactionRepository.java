@@ -45,7 +45,7 @@ public interface TransactionRepository {
     
     CommandNotification deleteAndRollback(PortalControllerContext portalControllerContext) throws PortletException;
   
-    CommandNotification createFile(PortalControllerContext portalControllerContext) throws PortletException;
+    CommandNotification createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
 
     CommandNotification createBlob(PortalControllerContext portalControllerContext) throws PortletException;
     
