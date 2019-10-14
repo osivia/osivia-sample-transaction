@@ -315,6 +315,23 @@ public class ViewTransactionController extends CMSPortlet implements PortletConf
     
     
     /**
+     * Update and rollback action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @throws PortletException
+     */
+    @ActionMapping(value = "reminder")
+    public void reminder(ActionRequest request, ActionResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        CommandNotification commandNotification = this.service.reminder(portalControllerContext);
+        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
+    }
+    
+    
+    /**
      * {@inheritDoc}
      */
     @Override

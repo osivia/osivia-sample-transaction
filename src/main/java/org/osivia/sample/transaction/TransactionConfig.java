@@ -12,6 +12,9 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
+import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoServiceFactory;
+
 /**
  * @author Jean-Sébastien Steux
  *
@@ -73,4 +76,15 @@ public class TransactionConfig {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
 
+    /**
+     * Get forms service.
+     * 
+     * @return forms service
+     */
+    @Bean
+    public IFormsService getFormsService() {
+        return NuxeoServiceFactory.getFormsService();
+    }
+
+    
 }

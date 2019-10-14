@@ -20,6 +20,7 @@
 <portlet:actionURL name="createblobs" var="createBlobsUrl" />
 <portlet:actionURL name="fetchPublicationInfo" var="fetchPublicationInfoUrl" />
 <portlet:actionURL name="updateAndRollback" var="updateAndRollbackUrl" />
+<portlet:actionURL name="reminder" var="reminderUrl" />
 
 <p>
     <a href="${createOneUrl}" class="btn btn-primary no-ajax-link">
@@ -75,6 +76,10 @@
     
     <a href="${updateAndRollbackUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="UPDATE_AND_ROLLBACK" /></span>
+    </a>
+    
+    <a href="${reminderUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="REMINDER" /></span>
     </a>
 
 </p>

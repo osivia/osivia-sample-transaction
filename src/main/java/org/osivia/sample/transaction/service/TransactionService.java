@@ -123,5 +123,17 @@ public interface TransactionService {
      * @throws PortletException
      */
     CommandNotification updateAndRollback(PortalControllerContext portalControllerContext) throws PortletException;
+   
+    
+    
+    
+    
+    /**
+     * Reminder
+     * 
+     * @param portalControllerContext
+     * @throws PortletException
+     */
+    CommandNotification reminder(PortalControllerContext portalControllerContext) throws PortletException;
     
 }

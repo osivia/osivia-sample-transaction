@@ -3,6 +3,8 @@ package org.osivia.sample.transaction.repository;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -14,10 +16,16 @@ import javax.portlet.PortletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
+
 import org.osivia.sample.transaction.model.CommandNotification;
 import org.osivia.sample.transaction.model.Configuration;
 import org.osivia.sample.transaction.repository.command.CreateAndRollbackCommand;
@@ -28,12 +36,16 @@ import org.osivia.sample.transaction.repository.command.CreateBlobsCommand;
 import org.osivia.sample.transaction.repository.command.CreateFileCommand;
 import org.osivia.sample.transaction.repository.command.DeleteAndRollbackCommand;
 import org.osivia.sample.transaction.repository.command.FetchPublicationInfoCommand;
+import org.osivia.sample.transaction.repository.command.GetTasksCommand;
 import org.osivia.sample.transaction.repository.command.OneCreationCommand;
 import org.osivia.sample.transaction.repository.command.SeveralCreationCommand;
 import org.osivia.sample.transaction.repository.command.UpdateAndRollbackCommand;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
+import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
+import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandServiceFactory;
 
@@ -56,9 +68,17 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	private static final String PATH_PROPERTY = "transaction.path";
 	/** Number of spaces. */
     private static final String WEBID = "transaction.webid";
+    
+
 
     /** Generator properties. */
     private final Properties properties;
+    
+    
+    
+    /** Forms service. */
+    @Autowired
+    private IFormsService formsService;
     
     /**
      * Constructor.
@@ -365,5 +385,25 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         return nuxeoController;
 
     }
+
+
+    @Override
+    public Document getTask(PortalControllerContext portalControllerContext, String uuid) throws PortletException {
+        
+        // Nuxeo controller
+        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
+
+        
+        Documents tasks =  (Documents) nuxeoController.executeNuxeoCommand(new GetTasksCommand(uuid));
+        if( tasks.size() != 1)
+            throw new PortletException(" tasks size = "+ tasks.size());
+        
+        return tasks.get(0);
+
+
+
+    }
+
+
 
 }
