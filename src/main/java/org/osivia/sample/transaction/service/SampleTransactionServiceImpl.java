@@ -1,6 +1,5 @@
 package org.osivia.sample.transaction.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,22 +7,21 @@ import java.util.Map;
 import javax.naming.NamingException;
 import javax.portlet.PortletException;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.notifications.INotificationsService;
-import org.osivia.portal.api.tasks.ITasksService;
+import org.osivia.portal.api.transaction.ITransactionService;
 import org.osivia.sample.transaction.model.CommandNotification;
 import org.osivia.sample.transaction.model.Configuration;
 import org.osivia.sample.transaction.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 
 /**
@@ -33,7 +31,7 @@ import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
  * @see GeneratorService
  */
 @Service
-public class TransactionServiceImpl implements TransactionService {
+public class SampleTransactionServiceImpl implements SampleTransactionService {
 
     /** Transaction repository. */
     @Autowired
@@ -52,6 +50,11 @@ public class TransactionServiceImpl implements TransactionService {
     /** Notifications service. */
     @Autowired
     private INotificationsService notificationsService;
+    
+    /** Transaction service. */
+    @Autowired    
+    public ITransactionService transactionService;
+    
 
 
 
@@ -62,7 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
      *
      * @throws NamingException
      */
-    public TransactionServiceImpl() throws NamingException {
+    public SampleTransactionServiceImpl() throws NamingException {
         super();
     }
 
@@ -187,13 +190,35 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public CommandNotification reminder(PortalControllerContext portalControllerContext) throws PortletException {
+        
+
+        
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
         CommandNotification commandNotification;
+        
+        NuxeoController nuxeoCtrl = new NuxeoController(portalControllerContext);
 
         try {
 
-            // Variables
+
+            
+            transactionService.initThreadTx();
+            
+            
+            
+            
+            
+
+            
+
+            
+
+            
+            //
+            // Start procedure 
+            //
+            
             Map<String, String> variables = new HashMap<>();
 
             variables.put("recipient", portalControllerContext.getRequest().getRemoteUser());
@@ -205,19 +230,47 @@ public class TransactionServiceImpl implements TransactionService {
             returnMap.get("uuid");
 
 
-            /* Get task from ES */
+
+            //
+            // Get task from ES 
+            //
 
             Document task = null;
             // Task documents
             List<EcmDocument> documents;
             try {
+                
+              
                 task = this.repository.getTask(portalControllerContext, returnMap.get("uuid"));
             } catch (PortletException e) {
                 throw new PortletException(e);
             }
+            
+            
+            transactionService.begin();
+            
+            
+            //
+            // Create file
+            //
+
+            String user = portalControllerContext.getRequest().getRemoteUser();
+            
+            Document userWorkspace = (Document) nuxeoCtrl.executeNuxeoCommand(new GetUserProfileCommand(user));
+            String rootPath = userWorkspace.getPath().substring(0, userWorkspace.getPath().lastIndexOf('/')) + "/documents";
+            nuxeoCtrl.executeNuxeoCommand(new SampleCreationCommand(rootPath));
+            
+            
+            commandNotification = new CommandNotification(true, "procedure created");
+         
 
 
-            // Variables
+
+            //
+            // Update procedure 
+            //
+            
+
             variables = new HashMap<>();
 
             if (task != null) {
@@ -228,12 +281,39 @@ public class TransactionServiceImpl implements TransactionService {
 
                 commandNotification = new CommandNotification(true, "procedure created and deleted");
             }
-            else commandNotification = new CommandNotification(false, "no task found");
+            else 
+                commandNotification = new CommandNotification(false, "no task found");
+            
+            
+
+            
+            
+            //transactionService.commit();
+            
+            transactionService.rollback();
 
         } catch (Exception e) {
-            commandNotification = new CommandNotification(false, "error, cause:" + e.toString());
+            
+            
+            
+            
+            try {
+                transactionService.rollback();
+                
+                commandNotification = new CommandNotification(false, "error, cause:" + e.toString());
+                
+            } catch (PortalException e1) {
+                commandNotification = new CommandNotification(false, "error during rollback, cause:" + e.toString());
+            }
+            
+
+           
 
         }
+        
+        
+        
+        transactionService.initThreadTx();
 
         return commandNotification;
     }

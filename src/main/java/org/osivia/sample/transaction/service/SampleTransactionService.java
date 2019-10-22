@@ -11,7 +11,7 @@ import org.osivia.sample.transaction.model.Configuration;
  *
  * @author Jean-Sébastien Steux
  */
-public interface TransactionService {
+public interface SampleTransactionService {
 
     /**
      * Get transaction configuration.

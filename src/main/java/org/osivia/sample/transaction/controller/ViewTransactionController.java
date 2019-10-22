@@ -18,7 +18,7 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.sample.transaction.model.CommandNotification;
 import org.osivia.sample.transaction.model.Configuration;
-import org.osivia.sample.transaction.service.TransactionService;
+import org.osivia.sample.transaction.service.SampleTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,7 +50,7 @@ public class ViewTransactionController extends CMSPortlet implements PortletConf
 
     /** Generator service. */
     @Autowired
-    private TransactionService service;
+    private SampleTransactionService service;
     
     /** Notifications service. */
     @Autowired

@@ -5,6 +5,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.transaction.ITransactionService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -75,6 +76,18 @@ public class TransactionConfig {
     public INotificationsService getNotificationService() {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
+    
+    
+    /**
+     * Get notifications service.
+     * 
+     * @return notification service
+     */
+    @Bean
+    public ITransactionService getTransactionService() {
+        return Locator.findMBean(ITransactionService.class, ITransactionService.MBEAN_NAME);
+    }
+
 
     /**
      * Get forms service.

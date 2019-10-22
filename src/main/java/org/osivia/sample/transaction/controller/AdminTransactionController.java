@@ -13,7 +13,7 @@ import javax.portlet.WindowState;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.sample.transaction.model.Configuration;
-import org.osivia.sample.transaction.service.TransactionService;
+import org.osivia.sample.transaction.service.SampleTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,7 +37,7 @@ public class AdminTransactionController implements PortletContextAware {
 
     /** transaction service. */
     @Autowired
-    private TransactionService service;
+    private SampleTransactionService service;
 
 
     /**
