@@ -1,6 +1,8 @@
 package org.osivia.sample.transaction;
 
 
+import org.osivia.directory.v2.service.PersonUpdateService;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -10,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.ldap.transaction.compensating.manager.ContextSourceTransactionManagerDelegate;
+import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -99,5 +103,30 @@ public class TransactionConfig {
         return NuxeoServiceFactory.getFormsService();
     }
 
+    /**
+     * Get person service.
+     *
+     * @return person service
+     */
+    @Bean(name = "personUpdateService")
+    public PersonUpdateService getPersonService() {
+        return DirServiceFactory.getService(PersonUpdateService.class);
+    }
+    
+    
+    /**
+     * Get person service.
+     *
+     * @return person service
+     */
+    @Bean(name = "ldapTxManager")
+    public ContextSourceTransactionManagerDelegate getTxManager() {
+        return (ContextSourceTransactionManagerDelegate) DirServiceFactory.getDirectoryTxManagerDelegate();
+    }
+    
+    
+
+
+    
     
 }

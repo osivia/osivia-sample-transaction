@@ -3,24 +3,31 @@ package org.osivia.sample.transaction.repository;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import javax.annotation.Resource;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.transaction.UserTransaction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
+import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
@@ -41,7 +48,14 @@ import org.osivia.sample.transaction.repository.command.OneCreationCommand;
 import org.osivia.sample.transaction.repository.command.SeveralCreationCommand;
 import org.osivia.sample.transaction.repository.command.UpdateAndRollbackCommand;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.ldap.transaction.compensating.manager.ContextSourceTransactionManagerDelegate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
 import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
@@ -69,7 +83,29 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	/** Number of spaces. */
     private static final String WEBID = "transaction.webid";
     
+    @Autowired
+    private ContextSourceTransactionManagerDelegate txManager;
+    
+//    @Bean()
+//    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+//
+//    
+//
+//   then the JtaTransactionManager will automatically find and use JBossTS via the application server's JNDI.
+//
+//    
+//
+//To do that, you have to add this property to the bean
+//
+//
+//
+//   <property name="transactionManagerName" value="java:jboss/TransactionManager"/>
+//    
+//    
+//    @Bean
+//    public JtaTransactionManager platformTransactionManager;
 
+    
 
     /** Generator properties. */
     private final Properties properties;
@@ -351,7 +387,56 @@ public class TransactionRepositoryImpl implements TransactionRepository {
      * @throws PortletException 
      */
     @Override
-    public CommandNotification updateAndRollback(PortalControllerContext portalControllerContext) throws PortletException {
+    public CommandNotification updateAndRollback(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException {
+        
+        
+        TransactionDefinition definition = new TransactionDefinition() {
+            @Override
+            public boolean isReadOnly() {
+                return false;
+            }
+            
+            @Override
+            public int getTimeout() {
+                return 0;
+            }
+            
+            @Override
+            public int getPropagationBehavior() {
+                 return TransactionDefinition.PROPAGATION_REQUIRED;
+            }
+            
+            @Override
+            public String getName() {
+                return "portal";
+            }
+            
+            @Override
+            public int getIsolationLevel() {
+                return TransactionDefinition.ISOLATION_DEFAULT;
+
+            }
+        };
+      
+        Object transaction = txManager.doGetTransaction();
+        txManager.doBegin(transaction, definition);
+        
+        
+        
+        Person person;
+        String uid;
+        person = personUpdateService.getEmptyPerson();
+        uid = "test-"+new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date());
+        person.setUid(uid);
+
+
+        person.setGivenName(uid);
+        person.setSn(uid);
+        person.setMail(uid);
+        person.setDisplayName(uid);
+        person.setCn(person.getGivenName() + " " + person.getSn());
+
+        personUpdateService.create(person);
         
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
@@ -361,6 +446,11 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         
         CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new UpdateAndRollbackCommand(configuration,UUID.randomUUID().toString()));
+        
+        txManager.doCommit(new DefaultTransactionStatus(transaction, true, true, false, false, null));
+        
+        //txManager.doRollback(new DefaultTransactionStatus(transaction, true, true, false, false, null));
+        
         return commandNotification;
     }
     

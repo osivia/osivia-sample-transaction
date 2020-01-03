@@ -8,6 +8,7 @@ import javax.naming.NamingException;
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -19,6 +20,7 @@ import org.osivia.sample.transaction.model.CommandNotification;
 import org.osivia.sample.transaction.model.Configuration;
 import org.osivia.sample.transaction.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
@@ -56,7 +58,9 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
     public ITransactionService transactionService;
     
 
-
+    @Autowired
+    @Qualifier("personUpdateService")
+    private PersonUpdateService personUpdateService;
 
     private static final String REMINDER_MODEL_ID = "reminder";
 
@@ -183,7 +187,7 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
      */
     @Override
     public CommandNotification updateAndRollback(PortalControllerContext portalControllerContext) throws PortletException {
-        return this.repository.updateAndRollback(portalControllerContext);
+        return this.repository.updateAndRollback(portalControllerContext, personUpdateService);
 
     }
 
@@ -191,7 +195,6 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
     @Override
     public CommandNotification reminder(PortalControllerContext portalControllerContext) throws PortletException {
         
-
         
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(portalControllerContext.getRequest().getLocale());
@@ -200,20 +203,8 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
         NuxeoController nuxeoCtrl = new NuxeoController(portalControllerContext);
 
         try {
-
-
-            
             transactionService.initThreadTx();
             
-            
-            
-            
-            
-
-            
-
-            
-
             
             //
             // Start procedure 

@@ -3,6 +3,7 @@ package org.osivia.sample.transaction.repository;
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.sample.transaction.model.CommandNotification;
 import org.osivia.sample.transaction.model.Configuration;
@@ -54,9 +55,11 @@ public interface TransactionRepository {
     
     CommandNotification fetchPublicationInfo(PortalControllerContext portalControllerContext) throws PortletException;
     
-    CommandNotification updateAndRollback(PortalControllerContext portalControllerContext) throws PortletException;
-
+ 
     Document getTask(PortalControllerContext portalControllerContext, String uuid) throws PortletException;
+
+
+    CommandNotification updateAndRollback(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException;
 
 
 }
