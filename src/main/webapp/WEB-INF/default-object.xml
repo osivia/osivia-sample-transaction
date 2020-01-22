@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployments>
+  <deployment>
+    <parent-ref>default</parent-ref>
+    <if-exists>overwrite</if-exists>
+    <page>
+      <page-name>transactions</page-name>
+      <display-name xml:lang="fr">transactions</display-name>
+      <properties/>
+      <security-constraint/>
+      <window>
+        <window-name>osivia-sample-transaction-instance</window-name>
+        <instance-ref>osivia-sample-transaction-instance</instance-ref>
+        <region>top</region>
+        <properties>
+          <property>
+            <name>theme.order</name>
+            <value>0</value>
+          </property>
+          <property>
+            <name>portal.windowContentType</name>
+            <value>portlet</value>
+          </property>
+        </properties>
+        <height>0</height>
+      </window>
+    </page>
+  </deployment>
+</deployments>
