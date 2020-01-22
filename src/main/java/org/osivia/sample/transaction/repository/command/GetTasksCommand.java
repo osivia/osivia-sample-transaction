@@ -41,28 +41,18 @@ public class GetTasksCommand implements INuxeoCommand {
 
         // Query
         StringBuilder query = new StringBuilder();
-        
+
         query.append("SELECT * FROM Document ");
 
-        
-        // Operation request
-//        if ("debug".equals(System.getProperty("osivia.transactionMode"))) {
-//            query.append("WHERE ecm:primaryType = 'ProcedureInstance' ");
-//            
-//            request = nuxeoSession.newRequest("Document.Query");
-//            request.setHeader("nx_querying_vcs_force", "true");
-//            request.setHeader(Constants.HEADER_NX_SCHEMAS, "*");
-//      
-//        } else {
-            query.append("WHERE ecm:primaryType = 'TaskDoc' ");
-            query.append("AND ecm:currentLifeCycleState = 'opened' ");
-            if (this.uuid != null) {
-                query.append("AND nt:pi.pi:globalVariablesValues.uuid = '").append(this.uuid).append("' ");
-            }
-            
-            request = nuxeoSession.newRequest("Document.QueryES");
-            request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, task");            
-//        }
+
+        query.append("WHERE ecm:primaryType = 'TaskDoc' ");
+        query.append("AND ecm:currentLifeCycleState = 'opened' ");
+        if (this.uuid != null) {
+            query.append("AND nt:pi.pi:globalVariablesValues.uuid = '").append(this.uuid).append("' ");
+        }
+
+        request = nuxeoSession.newRequest("Document.QueryES");
+        request.set(Constants.HEADER_NX_SCHEMAS, "dublincore, task");
 
         request.set("query", query.toString());
 

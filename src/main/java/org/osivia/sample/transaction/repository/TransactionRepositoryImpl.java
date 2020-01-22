@@ -5,63 +5,45 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.annotation.Resource;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.transaction.UserTransaction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.directory.v2.service.PersonUpdateService;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
-import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-
 import org.osivia.sample.transaction.model.CommandNotification;
 import org.osivia.sample.transaction.model.Configuration;
-import org.osivia.sample.transaction.repository.command.CreateAndRollbackCommand;
-import org.osivia.sample.transaction.repository.command.CreateAndTxUpdateCommand;
-import org.osivia.sample.transaction.repository.command.CreateAndUpdateCommand;
+
 import org.osivia.sample.transaction.repository.command.CreateBlobCommand;
 import org.osivia.sample.transaction.repository.command.CreateBlobsCommand;
 import org.osivia.sample.transaction.repository.command.CreateFileCommand;
-import org.osivia.sample.transaction.repository.command.DeleteAndRollbackCommand;
+import org.osivia.sample.transaction.repository.command.DeleteCommand;
 import org.osivia.sample.transaction.repository.command.FetchPublicationInfoCommand;
 import org.osivia.sample.transaction.repository.command.GetTasksCommand;
+import org.osivia.sample.transaction.repository.command.InitCommand;
 import org.osivia.sample.transaction.repository.command.OneCreationCommand;
-import org.osivia.sample.transaction.repository.command.SeveralCreationCommand;
-import org.osivia.sample.transaction.repository.command.UpdateAndRollbackCommand;
+import org.osivia.sample.transaction.repository.command.UpdateCommand;
+import org.osivia.sample.transaction.service.GetUserProfileCommand;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.ldap.transaction.compensating.manager.ContextSourceTransactionManagerDelegate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.jta.JtaTransactionManager;
-import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import fr.toutatice.portail.cms.nuxeo.api.NuxeoController;
-import fr.toutatice.portail.cms.nuxeo.api.forms.FormFilterException;
 import fr.toutatice.portail.cms.nuxeo.api.forms.IFormsService;
 import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandContext;
-import fr.toutatice.portail.cms.nuxeo.api.services.NuxeoCommandServiceFactory;
 
 
 /**
@@ -83,28 +65,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 	/** Number of spaces. */
     private static final String WEBID = "transaction.webid";
     
-    @Autowired
-    private ContextSourceTransactionManagerDelegate txManager;
-    
-//    @Bean()
-//    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
-//
-//    
-//
-//   then the JtaTransactionManager will automatically find and use JBossTS via the application server's JNDI.
-//
-//    
-//
-//To do that, you have to add this property to the bean
-//
-//
-//
-//   <property name="transactionManagerName" value="java:jboss/TransactionManager"/>
-//    
-//    
-//    @Bean
-//    public JtaTransactionManager platformTransactionManager;
-
+ 
     
 
     /** Generator properties. */
@@ -152,19 +113,26 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         {
             configuration = new Configuration();
 
-            //int nbOfworkspaces = NumberUtils.toInt(StringUtils.defaultIfEmpty(window.getProperty(NB_WORKSPACES_PROPERTY), "10");
-            String path = StringUtils.defaultIfEmpty(window.getProperty(PATH_PROPERTY),
-                    this.properties.getProperty(PATH_PROPERTY));
+//            //int nbOfworkspaces = NumberUtils.toInt(StringUtils.defaultIfEmpty(window.getProperty(NB_WORKSPACES_PROPERTY), "10");
+//            String path = StringUtils.defaultIfEmpty(window.getProperty(PATH_PROPERTY),
+//                    this.properties.getProperty(PATH_PROPERTY));
 
             String webid = StringUtils.defaultIfEmpty(window.getProperty(WEBID),
                     this.properties.getProperty(WEBID));
 
 
-            configuration.setPath(path);
+//            configuration.setPath(path);
             configuration.setWebid(webid);
             portalControllerContext.getRequest().getPortletSession().setAttribute(PORTLET_TRANSACTION_CONFIGURATION, configuration);
         }
 
+        
+        
+        Document userWorkspace = (Document) getNuxeoController(portalControllerContext).executeNuxeoCommand(new GetUserProfileCommand(portalControllerContext.getRequest().getRemoteUser()));
+        String rootPath = userWorkspace.getPath().substring(0, userWorkspace.getPath().lastIndexOf('/')) + "/documents/transactions";
+        configuration.setPath(rootPath);
+ 
+        
         return configuration;
     }
 
@@ -196,20 +164,23 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     
     
+    
+    
+    
     /** 
      * {@inheritDoc}
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createOne(PortalControllerContext portalControllerContext) throws PortletException {
+    public Document createOne(PortalControllerContext portalControllerContext) throws PortletException {
         
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
         
         NuxeoController nuxeoController = getNuxeoController(portalControllerContext);
         
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new OneCreationCommand(configuration,UUID.randomUUID().toString()));
-        return commandNotification;
+        return (Document) nuxeoController.executeNuxeoCommand(new OneCreationCommand(configuration,UUID.randomUUID().toString()));
+
         
     }
 
@@ -221,7 +192,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createSeveral(PortalControllerContext portalControllerContext) throws PortletException {
+    public Document delete(PortalControllerContext portalControllerContext) throws PortletException {
         
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
@@ -230,9 +201,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
 
         
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new SeveralCreationCommand(configuration,UUID.randomUUID().toString()));
-        return commandNotification;
-        
+        return (Document) nuxeoController.executeNuxeoCommand(new DeleteCommand(configuration,UUID.randomUUID().toString()));
+
     }
     
     /** 
@@ -240,7 +210,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createAndUpdate(PortalControllerContext portalControllerContext) throws PortletException {
+    public Document createBlob(PortalControllerContext portalControllerContext) throws PortletException {
         
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
@@ -249,9 +219,10 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
 
         
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateAndUpdateCommand(configuration,UUID.randomUUID().toString()));
-        return commandNotification;
+        return (Document) nuxeoController.executeNuxeoCommand(new CreateBlobCommand(configuration,UUID.randomUUID().toString()));
+
     }
+    
     
     
     /** 
@@ -259,7 +230,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createAndUpdateTx2(PortalControllerContext portalControllerContext) throws PortletException {
+    public Document createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException {
         
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
@@ -268,8 +239,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
 
         
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateAndTxUpdateCommand(configuration,UUID.randomUUID().toString()));
-        return commandNotification;
+        return (Document) nuxeoController.executeNuxeoCommand(new CreateFileCommand(configuration,suffix));
+
     }
     
     /** 
@@ -277,25 +248,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createAndRollback(PortalControllerContext portalControllerContext) throws PortletException {
-        
-        // Configuration
-        Configuration configuration = this.getConfiguration(portalControllerContext);
-        
-        // Nuxeo controller
-        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-;
-        
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateAndRollbackCommand(configuration, UUID.randomUUID().toString()));
-        return commandNotification;
-    }
-    
-    /** 
-     * {@inheritDoc}
-     * @throws PortletException 
-     */
-    @Override
-    public CommandNotification deleteAndRollback(PortalControllerContext portalControllerContext) throws PortletException {
+    public Document createBlobs(PortalControllerContext portalControllerContext) throws PortletException {
         
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
@@ -304,16 +257,16 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
 
         
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new DeleteAndRollbackCommand(configuration,UUID.randomUUID().toString()));
-        return commandNotification;
+        return (Document) nuxeoController.executeNuxeoCommand(new CreateBlobsCommand(configuration,UUID.randomUUID().toString()));
+
     }
-    
+
     /** 
      * {@inheritDoc}
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createBlob(PortalControllerContext portalControllerContext) throws PortletException {
+    public Document fetchPublicationInfo(PortalControllerContext portalControllerContext) throws PortletException {
         
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
@@ -322,10 +275,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
 
         
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateBlobCommand(configuration,UUID.randomUUID().toString()));
-        return commandNotification;
+        return (Document) nuxeoController.executeNuxeoCommand(new FetchPublicationInfoCommand(configuration,UUID.randomUUID().toString()));
+
     }
-    
     
     
     /** 
@@ -333,100 +285,29 @@ public class TransactionRepositoryImpl implements TransactionRepository {
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException {
-        
+    public void init(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException {
+    
+        // Nuxeo controller
+        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
         // Configuration
         Configuration configuration = this.getConfiguration(portalControllerContext);
         
-        // Nuxeo controller
-        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-
-        
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateFileCommand(configuration,suffix));
-        return commandNotification;
+        nuxeoController.executeNuxeoCommand(new InitCommand(configuration, personUpdateService));
+  
+    
     }
+    
     
     /** 
      * {@inheritDoc}
      * @throws PortletException 
      */
     @Override
-    public CommandNotification createBlobs(PortalControllerContext portalControllerContext) throws PortletException {
-        
-        // Configuration
-        Configuration configuration = this.getConfiguration(portalControllerContext);
-        
-        // Nuxeo controller
-        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-
-        
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new CreateBlobsCommand(configuration,UUID.randomUUID().toString()));
-        return commandNotification;
-    }
-
-    /** 
-     * {@inheritDoc}
-     * @throws PortletException 
-     */
-    @Override
-    public CommandNotification fetchPublicationInfo(PortalControllerContext portalControllerContext) throws PortletException {
-        
-        // Configuration
-        Configuration configuration = this.getConfiguration(portalControllerContext);
-        
-        // Nuxeo controller
-        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
-
-        
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new FetchPublicationInfoCommand(configuration,UUID.randomUUID().toString()));
-        return commandNotification;
-    }
-    
-    /** 
-     * {@inheritDoc}
-     * @throws PortletException 
-     */
-    @Override
-    public CommandNotification updateAndRollback(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException {
-        
-        
-        TransactionDefinition definition = new TransactionDefinition() {
-            @Override
-            public boolean isReadOnly() {
-                return false;
-            }
-            
-            @Override
-            public int getTimeout() {
-                return 0;
-            }
-            
-            @Override
-            public int getPropagationBehavior() {
-                 return TransactionDefinition.PROPAGATION_REQUIRED;
-            }
-            
-            @Override
-            public String getName() {
-                return "portal";
-            }
-            
-            @Override
-            public int getIsolationLevel() {
-                return TransactionDefinition.ISOLATION_DEFAULT;
-
-            }
-        };
-      
-        Object transaction = txManager.doGetTransaction();
-        txManager.doBegin(transaction, definition);
-        
-        
-        
-        Person person;
+    public Document createAndUpdate(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException {
+         Person person;
         String uid;
         person = personUpdateService.getEmptyPerson();
-        uid = "test-"+new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date());
+        uid = "test-"+new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
         person.setUid(uid);
 
 
@@ -445,13 +326,9 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
 
         
-        CommandNotification commandNotification = (CommandNotification) nuxeoController.executeNuxeoCommand(new UpdateAndRollbackCommand(configuration,UUID.randomUUID().toString()));
-        
-        txManager.doCommit(new DefaultTransactionStatus(transaction, true, true, false, false, null));
-        
-        //txManager.doRollback(new DefaultTransactionStatus(transaction, true, true, false, false, null));
-        
-        return commandNotification;
+        Document doc = (Document) nuxeoController.executeNuxeoCommand(new UpdateCommand(configuration,UUID.randomUUID().toString()));
+        return doc;
+
     }
     
     /**
@@ -489,10 +366,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             throw new PortletException(" tasks size = "+ tasks.size());
         
         return tasks.get(0);
-
-
-
-    }
+   }
 
 
 

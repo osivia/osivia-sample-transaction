@@ -10,19 +10,21 @@
 <portlet:actionURL name="createone" var="createOneUrl" />
 <portlet:actionURL name="createseveral" var="createSeveralUrl" />
 <portlet:actionURL name="createandrollback" var="createAndRollbackUrl" />
-<portlet:actionURL name="createandupdate" var="createAndUpdateUrl" />
-<portlet:actionURL name="createandupdatetx2" var="createAndUpdateTx2Url" />
-
-
 <portlet:actionURL name="deleteandrollback" var="deleteAndRollbackUrl" />
 <portlet:actionURL name="createblob" var="createBlobUrl" />
 <portlet:actionURL name="createfile" var="createFileUrl" />
 <portlet:actionURL name="createblobs" var="createBlobsUrl" />
 <portlet:actionURL name="fetchPublicationInfo" var="fetchPublicationInfoUrl" />
+<portlet:actionURL name="updateAndCommit" var="updateAndCommitUrl" />
+<portlet:actionURL name="updateWithoutCommit" var="updateWithoutCommitUrl" />
 <portlet:actionURL name="updateAndRollback" var="updateAndRollbackUrl" />
 <portlet:actionURL name="reminder" var="reminderUrl" />
+<portlet:actionURL name="init" var="initUrl" />
 
 <p>
+
+    <p>A QAULIFIER</p>
+
     <a href="${createOneUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="CREATE_ONE" /></span>
     </a>
@@ -38,15 +40,7 @@
     </a>
     <br/><br/>
     
-    <a href="${createAndUpdateUrl}" class="btn btn-primary no-ajax-link">
-        <span><op:translate key="CREATE_AND_UPDATE" /></span>
-    </a>
-    <br/><br/>
-    
-        <a href="${createAndUpdateTx2Url}" class="btn btn-primary no-ajax-link">
-        <span><op:translate key="CREATE_AND_UPDATE_TX2" /></span>
-    </a>
-    <br/><br/>
+
     
     <a href="${deleteAndRollbackUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="DELETE_AND_ROLLBACK" /></span>
@@ -59,25 +53,51 @@
     <br/><br/>
     
         
-    <a href="${createFileUrl}" class="btn btn-primary no-ajax-link">
-        <span><op:translate key="CREATE_FILE" /></span>
-    </a>
-    <br/><br/>
+
     
     <a href="${createBlobsUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="CREATE_BLOBS" /></span>
     </a>
     <br/><br/>
     
+    
+    
+    
     <a href="${fetchPublicationInfoUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="FETCH_PUBLICATION_INFO" /></span>
     </a>
     <br/><br/>
     
-    <a href="${updateAndRollbackUrl}" class="btn btn-primary no-ajax-link">
+    
+        <p>INIT</p>
+    
+    
+    <a href="${initUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="INIT" /></span>
+    </a>
+    
+
+    
+    <p>TESTS CMS</p>
+    
+        <a href="${createFileUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="CREATE_FILE" /></span>
+    </a>
+    
+    <a href="${updateAndCommitUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="UPDATE_AND_COMMIT" /></span>
+    </a>
+    
+    <a href="${updateWithoutCommitUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="UPDATE_WITHOUT_COMMIT" /></span>
+    </a>
+    
+   <a href="${updateAndRollbackUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="UPDATE_AND_ROLLBACK" /></span>
     </a>
     
+        <p>TELEPROCEDURES</p>
+        
     <a href="${reminderUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="REMINDER" /></span>
     </a>

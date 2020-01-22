@@ -47,22 +47,8 @@ public interface SampleTransactionService {
      */
     CommandNotification createSeveral(PortalControllerContext portalControllerContext) throws PortletException;
     
-    /**
-     * Create and update document
-     * 
-     * @param portalControllerContext
-     * @throws PortletException
-     */
-    CommandNotification createAndUpdate(PortalControllerContext portalControllerContext) throws PortletException;
     
-    
-    /**
-     * Create and update document
-     * 
-     * @param portalControllerContext
-     * @throws PortletException
-     */
-    CommandNotification createAndUpdateTx2(PortalControllerContext portalControllerContext) throws PortletException;
+
     
     /**
      * Create and rollback
@@ -115,18 +101,7 @@ public interface SampleTransactionService {
      */
     CommandNotification fetchPublicationInfo(PortalControllerContext portalControllerContext) throws PortletException;
     
-    
-    /**
-     * Update and Rollback
-     * 
-     * @param portalControllerContext
-     * @throws PortletException
-     */
-    CommandNotification updateAndRollback(PortalControllerContext portalControllerContext) throws PortletException;
-   
-    
-    
-    
+     
     
     /**
      * Reminder
@@ -135,5 +110,14 @@ public interface SampleTransactionService {
      * @throws PortletException
      */
     CommandNotification reminder(PortalControllerContext portalControllerContext) throws PortletException;
+
+    CommandNotification updateAndRollback(PortalControllerContext portalControllerContext) throws PortletException;
+    CommandNotification updateAndCommit(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    CommandNotification updateWithoutCommit(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    CommandNotification init(PortalControllerContext portalControllerContext) throws PortletException;
     
 }

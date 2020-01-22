@@ -35,110 +35,43 @@ public class CreateFileCommand implements INuxeoCommand {
     @Override
     public Object execute(Session session) throws Exception {
 
-        boolean transaction = true;
-
-        CommandNotification commandNotification;
-        String txId = null;
-        try {
-
-            Calendar now = Calendar.getInstance();
-
-            // Creation
-            OperationRequest operationRequest = session.newRequest("Document.Create");
-            operationRequest.setHeader("nx_es_sync", String.valueOf(true));
-            if( transaction)
-                operationRequest.setHeader("Tx-conversation-id", txId);
-            Document createdDoc = (Document) operationRequest.setInput(new PathRef(configuration.getPath()))
-                    .set("type", "File").execute();
-            
-            
-            System.out.println("Creation DONE: " + createdDoc.getPath() + " | " + createdDoc.getInputRef() + "\n");
 
 
-            PropertyMap properties = new PropertyMap();
-            String end = "-commitx1";
-            if (suffix != null)
-                end += "-" + suffix;
-            properties.set("dc:title", "file " + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE) + ":" + now.get(Calendar.SECOND) + end);
+        Calendar now = Calendar.getInstance();
 
-            OperationRequest operationUpdateRequest = session.newRequest("Document.Update");
-            operationUpdateRequest.setHeader("nx_es_sync", String.valueOf(true));
-            if (transaction)
-                operationUpdateRequest.setHeader("Tx-conversation-id", txId);
-            operationUpdateRequest.setInput(createdDoc).set("properties", properties).execute();
+        // Creation
+        OperationRequest operationRequest = session.newRequest("Document.Create");
+        operationRequest.setHeader("nx_es_sync", String.valueOf(true));
+
+        Document createdDoc = (Document) operationRequest.setInput(new PathRef(configuration.getPath())).set("type", "File").execute();
 
 
-            URL exampleFile = this.getClass().getResource("/WEB-INF/classes/osivia.docx");
-            File file = new File(exampleFile.getFile());
-            Blob blob = new FileBlob(file, "osivia", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        System.out.println("Creation DONE: " + createdDoc.getPath() + " | " + createdDoc.getInputRef() + "\n");
 
 
-            OperationRequest req = session.newRequest("Blob.Attach").setInput(blob).set("document", createdDoc.getPath());
-            if (transaction)
-                req.setHeader("Tx-conversation-id", txId);
-            req.set("xpath", "file:content");
+        PropertyMap properties = new PropertyMap();
+        String end = "-commitx1";
+        if (suffix != null)
+            end += "-" + suffix;
+        properties.set("dc:title", "file " + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE) + ":" + now.get(Calendar.SECOND) + end);
 
-            req.setHeader("nx_es_sync", String.valueOf(true));
-            FileBlob blobAdded = (FileBlob) req.execute();
-
-
-            // First commit
-            if( transaction)             
-                session.newRequest("Repository.CommitOrRollbackTransaction").setHeader("Tx-conversation-id", txId).execute();
-
-            // 2nd transaction
-            if (transaction)
-                txId = TransactionUtils.createTransaction(session);
-
-            properties = new PropertyMap();
-            end = "-commitx2";
-            if (suffix != null)
-                end += "-" + suffix;
-            properties.set("dc:title", "file " + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE) + ":" + now.get(Calendar.SECOND) + end);
-
-            operationUpdateRequest = session.newRequest("Document.Update");
-            if (transaction)
-                operationUpdateRequest.setHeader("Tx-conversation-id", txId);
-            operationUpdateRequest.setInput(createdDoc).set("properties", properties).execute();
-            operationUpdateRequest.setHeader("nx_es_sync", String.valueOf(true));
+        OperationRequest operationUpdateRequest = session.newRequest("Document.Update");
+        operationUpdateRequest.setHeader("nx_es_sync", String.valueOf(true));
+        operationUpdateRequest.setInput(createdDoc).set("properties", properties).execute();
 
 
-            exampleFile = this.getClass().getResource("/WEB-INF/classes/empty.docx");
-            file = new File(exampleFile.getFile());
-            blob = new FileBlob(file, "almost_empty", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        URL exampleFile = this.getClass().getResource("/WEB-INF/classes/osivia.docx");
+        File file = new File(exampleFile.getFile());
+        Blob blob = new FileBlob(file, "osivia", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
 
-            req = session.newRequest("Blob.Attach").setInput(blob).set("document", createdDoc.getPath());
-            // req.setHeader(Constants.HEADER_NX_VOIDOP, "true");
-            if (transaction)
-                req.setHeader("Tx-conversation-id", txId);
-            req.set("xpath", "file:content");
-            req.setHeader("nx_es_sync", String.valueOf(true));
-            blobAdded = (FileBlob) req.execute();
+        OperationRequest req = session.newRequest("Blob.Attach").setInput(blob).set("document", createdDoc.getPath());
+        req.set("xpath", "file:content");
 
+        req.setHeader("nx_es_sync", String.valueOf(true));
+        req.execute();
 
-            // And rollback
-            if (transaction)
-                session.newRequest("Repository.MarkTransactionAsRollback").setHeader("Tx-conversation-id", txId).execute();
-
-
-            System.out.println("Creation File DONE : " + blobAdded.getInputRef());
-            commandNotification = new CommandNotification(true, "File créé avec succès : " + blobAdded.getInputRef());
-
-        } catch (Exception e) {
-            if (txId != null) {
-                if (transaction)
-                    session.newRequest("Repository.MarkTransactionAsRollback").setHeader("Tx-conversation-id", txId).execute();
-                System.out.println(e);
-            }
-            commandNotification = new CommandNotification(false, "Erreur, Rollback nécessaire, cause:" + e.toString());
-        } finally {
-            if (txId != null)
-                if (transaction)
-                    session.newRequest("Repository.CommitOrRollbackTransaction").setHeader("Tx-conversation-id", txId).execute();
-        }
-
-        return commandNotification;
+        return createdDoc;
     }
 
     @Override

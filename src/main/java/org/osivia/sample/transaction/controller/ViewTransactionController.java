@@ -159,38 +159,8 @@ public class ViewTransactionController extends CMSPortlet implements PortletConf
         this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
     }
     
-    /**
-     * Create and update document action mapping.
-     * 
-     * @param request action request
-     * @param response action response
-     * @throws PortletException
-     */
-    @ActionMapping(value = "createandupdate")
-    public void createAndUpdate(ActionRequest request, ActionResponse response) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-
-        CommandNotification commandNotification = this.service.createAndUpdate(portalControllerContext);
-        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
-    }
     
-    
-    /**
-     * Create and update document action mapping.
-     * 
-     * @param request action request
-     * @param response action response
-     * @throws PortletException
-     */
-    @ActionMapping(value = "createandupdatetx2")
-    public void createAndUpdateTx2(ActionRequest request, ActionResponse response) throws PortletException {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        CommandNotification commandNotification = this.service.createAndUpdateTx2(portalControllerContext);
-        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
-    }
     
     /**
      * Create and rollback action mapping.
@@ -321,12 +291,63 @@ public class ViewTransactionController extends CMSPortlet implements PortletConf
      * @param response action response
      * @throws PortletException
      */
+    @ActionMapping(value = "updateAndCommit")
+    public void updateAndCommit(ActionRequest request, ActionResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        CommandNotification commandNotification = this.service.updateAndCommit(portalControllerContext);
+        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
+    }
+    
+    
+    /**
+     * Update and rollback action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @throws PortletException
+     */
+    @ActionMapping(value = "updateWithoutCommit")
+    public void updateWithoutCommit(ActionRequest request, ActionResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        CommandNotification commandNotification = this.service.updateWithoutCommit(portalControllerContext);
+        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
+    }
+    
+    /**
+     * Update and rollback action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @throws PortletException
+     */
     @ActionMapping(value = "reminder")
     public void reminder(ActionRequest request, ActionResponse response) throws PortletException {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
         CommandNotification commandNotification = this.service.reminder(portalControllerContext);
+        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
+    }
+    
+    
+    
+    /**
+     * Update and rollback action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @throws PortletException
+     */
+    @ActionMapping(value = "init")
+    public void init(ActionRequest request, ActionResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        CommandNotification commandNotification = this.service.init(portalControllerContext);
         this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
     }
     

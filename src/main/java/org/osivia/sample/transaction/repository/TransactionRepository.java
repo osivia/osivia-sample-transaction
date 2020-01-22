@@ -35,31 +35,28 @@ public interface TransactionRepository {
     void setConfiguration(PortalControllerContext portalControllerContext, Configuration configuration) throws PortletException;
 
 
-    CommandNotification createOne(PortalControllerContext portalControllerContext) throws PortletException;
-    
-    CommandNotification createSeveral(PortalControllerContext portalControllerContext) throws PortletException;
-    
-    CommandNotification createAndUpdate(PortalControllerContext portalControllerContext) throws PortletException;
-  
-    CommandNotification createAndUpdateTx2(PortalControllerContext portalControllerContext) throws PortletException;
+    Document createOne(PortalControllerContext portalControllerContext) throws PortletException;
 
-    CommandNotification createAndRollback(PortalControllerContext portalControllerContext) throws PortletException;
     
-    CommandNotification deleteAndRollback(PortalControllerContext portalControllerContext) throws PortletException;
+    Document delete(PortalControllerContext portalControllerContext) throws PortletException;
   
-    CommandNotification createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
+    Document createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
 
-    CommandNotification createBlob(PortalControllerContext portalControllerContext) throws PortletException;
+    Document createBlob(PortalControllerContext portalControllerContext) throws PortletException;
     
-    CommandNotification createBlobs(PortalControllerContext portalControllerContext) throws PortletException;
+    Document createBlobs(PortalControllerContext portalControllerContext) throws PortletException;
     
-    CommandNotification fetchPublicationInfo(PortalControllerContext portalControllerContext) throws PortletException;
+    Document fetchPublicationInfo(PortalControllerContext portalControllerContext) throws PortletException;
     
  
     Document getTask(PortalControllerContext portalControllerContext, String uuid) throws PortletException;
 
 
-    CommandNotification updateAndRollback(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException;
+    
+    // Implicits transaction
+    Document createAndUpdate(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException;
 
+
+    void init(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException;
 
 }

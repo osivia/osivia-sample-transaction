@@ -176,6 +176,7 @@
                                         <descriptor>src/main/assembly/assembly.xml</descriptor>
                                     </descriptors>
                                     <finalName>export</finalName>
+                                    <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/docs/models</outputDirectory>                                    
                                     <appendAssemblyId>false</appendAssemblyId>
                                 </configuration>
                                 <goals>
