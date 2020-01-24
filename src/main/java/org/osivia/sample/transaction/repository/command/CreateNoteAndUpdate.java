@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.toutatice.portail.cms.nuxeo.api.INuxeoCommand;
 
-public class UpdateCommand implements INuxeoCommand {
+public class CreateNoteAndUpdate implements INuxeoCommand {
 
     private final Configuration configuration;
     String suffix;
 
 
-    public UpdateCommand(Configuration configuration, String suffix) {
+    public CreateNoteAndUpdate(Configuration configuration, String suffix) {
         super();
         this.configuration = configuration;
         this.suffix = suffix;

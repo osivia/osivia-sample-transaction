@@ -22,11 +22,13 @@ public class CreateFileCommand implements INuxeoCommand {
 
     private final Configuration configuration;
     String suffix;
+    boolean exception;
 
-    public CreateFileCommand(Configuration configuration, String suffix) {
+    public CreateFileCommand(Configuration configuration, String suffix, boolean exception) {
         super();
         this.configuration = configuration;
         this.suffix = suffix;
+        this.exception = exception;
     }
 
     /**
@@ -70,6 +72,14 @@ public class CreateFileCommand implements INuxeoCommand {
 
         req.setHeader("nx_es_sync", String.valueOf(true));
         req.execute();
+        
+        
+        if( exception)  {
+
+            req = session.newRequest("Transaction.GenerateExceptionTest");
+            req.execute();
+                        
+        }
 
         return createdDoc;
     }

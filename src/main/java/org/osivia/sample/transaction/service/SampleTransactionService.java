@@ -73,15 +73,7 @@ public interface SampleTransactionService {
      * @throws PortletException
      */
     CommandNotification createBlob(PortalControllerContext portalControllerContext) throws PortletException;
-    
-    /**
-     * Create file
-     * 
-     * @param portalControllerContext
-     * @throws PortletException
-     */
-    CommandNotification createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
-   
+
     
     
     /**
@@ -102,14 +94,8 @@ public interface SampleTransactionService {
     CommandNotification fetchPublicationInfo(PortalControllerContext portalControllerContext) throws PortletException;
     
      
-    
-    /**
-     * Reminder
-     * 
-     * @param portalControllerContext
-     * @throws PortletException
-     */
-    CommandNotification reminder(PortalControllerContext portalControllerContext) throws PortletException;
+
+
 
     CommandNotification updateAndRollback(PortalControllerContext portalControllerContext) throws PortletException;
     CommandNotification updateAndCommit(PortalControllerContext portalControllerContext) throws PortletException;
@@ -119,5 +105,18 @@ public interface SampleTransactionService {
 
 
     CommandNotification init(PortalControllerContext portalControllerContext) throws PortletException;
+
+    CommandNotification createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
+    CommandNotification createFileOutTrans(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
+
+
+    CommandNotification createFileException(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
+
+
+    CommandNotification reminderStartCommit(PortalControllerContext portalControllerContext) throws PortletException;
+    CommandNotification reminderStartRollback(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    CommandNotification reminderStartNoTrans(PortalControllerContext portalControllerContext) throws PortletException;
     
 }

@@ -1,5 +1,7 @@
 package org.osivia.sample.transaction.repository;
 
+import java.util.List;
+
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
@@ -40,7 +42,7 @@ public interface TransactionRepository {
     
     Document delete(PortalControllerContext portalControllerContext) throws PortletException;
   
-    Document createFile(PortalControllerContext portalControllerContext, String suffix) throws PortletException;
+
 
     Document createBlob(PortalControllerContext portalControllerContext) throws PortletException;
     
@@ -58,5 +60,18 @@ public interface TransactionRepository {
 
 
     void init(PortalControllerContext portalControllerContext, PersonUpdateService personUpdateService) throws PortletException;
+
+
+    Document createFile(PortalControllerContext portalControllerContext, String suffix, boolean exception) throws PortletException;
+
+
+    List<Document> getTasks(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+
+    void initReminderUserTasks(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    void startReminderTask(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

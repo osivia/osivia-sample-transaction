@@ -102,7 +102,7 @@ public class InitCommand implements INuxeoCommand {
 
         
         Person criteria = personUpdateService.getEmptyPerson();
-        criteria.setUid("test");
+        criteria.setUid("test*");
         List<Person> persons = personUpdateService.findByCriteria(criteria);
         for(Person person : persons) {
             personUpdateService.delete(person);

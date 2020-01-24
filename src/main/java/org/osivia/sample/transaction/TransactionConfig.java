@@ -7,7 +7,9 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.tasks.ITasksService;
 import org.osivia.portal.api.transaction.ITransactionService;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -125,6 +127,16 @@ public class TransactionConfig {
     }
     
     
+
+    /**
+     * Get tasks service.
+     * 
+     * @return tasks service
+     */
+    @Bean
+    public ITasksService getTasksService() {
+        return Locator.findMBean(ITasksService.class, ITasksService.MBEAN_NAME);
+    }
 
 
     

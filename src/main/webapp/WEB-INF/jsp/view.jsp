@@ -13,12 +13,19 @@
 <portlet:actionURL name="deleteandrollback" var="deleteAndRollbackUrl" />
 <portlet:actionURL name="createblob" var="createBlobUrl" />
 <portlet:actionURL name="createfile" var="createFileUrl" />
+<portlet:actionURL name="createfileexc" var="createFileExcUrl" />
+<portlet:actionURL name="createfileoutttrans" var="createFileOutTransUrl" />
+<portlet:actionURL name="createfilenocommit" var="createFileNoCommitUrl" />
+
 <portlet:actionURL name="createblobs" var="createBlobsUrl" />
 <portlet:actionURL name="fetchPublicationInfo" var="fetchPublicationInfoUrl" />
 <portlet:actionURL name="updateAndCommit" var="updateAndCommitUrl" />
 <portlet:actionURL name="updateWithoutCommit" var="updateWithoutCommitUrl" />
 <portlet:actionURL name="updateAndRollback" var="updateAndRollbackUrl" />
-<portlet:actionURL name="reminder" var="reminderUrl" />
+<portlet:actionURL name="reminderstartcommit" var="reminderStartCommitUrl" />
+<portlet:actionURL name="reminderstartrollback" var="reminderStartRollbackUrl" />
+
+
 <portlet:actionURL name="init" var="initUrl" />
 
 <p>
@@ -78,11 +85,24 @@
     
 
     
-    <p>TESTS CMS</p>
+    <p>TESTS BLOB</p>
     
-        <a href="${createFileUrl}" class="btn btn-primary no-ajax-link">
+    <a href="${createFileUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="CREATE_FILE" /></span>
     </a>
+    
+
+      
+    <a href="${createFileExcUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="CREATE_FILE_EXCEPTION" /></span>
+    </a>
+
+      <a href="${createFileOutTransUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="CREATE_FILE_OUT_TRANS" /></span>
+    </a>
+  
+    
+   <p>TESTS CMS + LDAP (create/update note + create LDAP user)</p>
     
     <a href="${updateAndCommitUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="UPDATE_AND_COMMIT" /></span>
@@ -96,10 +116,14 @@
         <span><op:translate key="UPDATE_AND_ROLLBACK" /></span>
     </a>
     
-        <p>TELEPROCEDURES</p>
+    <p>TELEPROCEDURES</p>
         
-    <a href="${reminderUrl}" class="btn btn-primary no-ajax-link">
-        <span><op:translate key="REMINDER" /></span>
+    <a href="${reminderStartCommitUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="REMINDER_START_COMMIT" /></span>
+    </a>
+    
+     <a href="${reminderStartRollbackUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="REMINDER_START_ROLLBACK" /></span>
     </a>
 
 </p>
