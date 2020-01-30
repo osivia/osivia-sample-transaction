@@ -118,5 +118,11 @@ public interface SampleTransactionService {
 
 
     CommandNotification reminderStartNoTrans(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    CommandNotification importFiles(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    CommandNotification createFolder(PortalControllerContext portalControllerContext) throws PortletException;
     
 }

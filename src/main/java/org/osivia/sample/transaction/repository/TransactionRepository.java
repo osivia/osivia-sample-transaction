@@ -5,6 +5,7 @@ import java.util.List;
 import javax.portlet.PortletException;
 
 import org.nuxeo.ecm.automation.client.model.Document;
+import org.nuxeo.ecm.automation.client.model.Documents;
 import org.osivia.directory.v2.service.PersonUpdateService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.sample.transaction.model.CommandNotification;
@@ -73,5 +74,12 @@ public interface TransactionRepository {
 
 
     void startReminderTask(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    Documents importFiles(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+  
+    Document createFolder(PortalControllerContext portalControllerContext) throws PortletException;
 
 }

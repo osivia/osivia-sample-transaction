@@ -207,6 +207,27 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
 
     }
 
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CommandNotification createFolder(PortalControllerContext portalControllerContext) throws PortletException {
+
+        CommandNotification notif;
+        transactionService.begin();
+        try {
+            this.repository.createFolder(portalControllerContext);
+            transactionService.commit();
+            notif = new CommandNotification(true, "createFolder");
+        } catch (Exception e) {
+            notif = manageException("createFolder", e);
+        }
+        return notif;
+
+    }
+    
 
     /**
      * {@inheritDoc}
@@ -267,6 +288,26 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
 
     }
 
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CommandNotification importFiles(PortalControllerContext portalControllerContext) throws PortletException {
+
+        CommandNotification notif;
+        transactionService.begin();
+        try {
+            this.repository.importFiles(portalControllerContext);
+            transactionService.commit();
+            notif = new CommandNotification(true, "importFiles");
+        } catch (Exception e) {
+            notif = manageException("importFiles", e);
+        }
+        return notif;
+
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -277,7 +318,7 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
         try {
             this.repository.fetchPublicationInfo(portalControllerContext);
             transactionService.commit();
-            notif = new CommandNotification(true, "createBlobs");
+            notif = new CommandNotification(true, "fetchPublicationInfo");
         } catch (Exception e) {
             notif = manageException("fetchPublicationInfo", e);
         }

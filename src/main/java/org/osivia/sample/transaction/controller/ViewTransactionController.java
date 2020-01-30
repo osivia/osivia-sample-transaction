@@ -235,6 +235,32 @@ public class ViewTransactionController extends CMSPortlet implements PortletConf
 
     }
     
+    
+    
+    /**
+     * Create file action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @throws PortletException
+     */
+    @ActionMapping(value = "createfolder")
+    public void createFolder(ActionRequest request, ActionResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        CommandNotification commandNotification = this.service.createFolder(portalControllerContext);
+        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
+ 
+        
+        // Refresh navigation
+        request.setAttribute(Constants.PORTLET_ATTR_UPDATE_CONTENTS, Constants.PORTLET_VALUE_ACTIVATE);
+        
+        // Update public render parameter for associated portlets refresh
+        response.setRenderParameter("dnd-update", String.valueOf(System.currentTimeMillis()));
+
+    }
+    
     /**
      * Create file action mapping.
      * 
@@ -365,6 +391,24 @@ public class ViewTransactionController extends CMSPortlet implements PortletConf
         CommandNotification commandNotification = this.service.updateWithoutCommit(portalControllerContext);
         this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
     }
+    
+    /**
+     * Import files action mapping.
+     * 
+     * @param request action request
+     * @param response action response
+     * @throws PortletException
+     */
+    @ActionMapping(value = "importfiles")
+    public void importFiles(ActionRequest request, ActionResponse response) throws PortletException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        CommandNotification commandNotification = this.service.importFiles(portalControllerContext);
+        this.notificationsService.addSimpleNotification(portalControllerContext, commandNotification.getMsgReturn(), commandNotification.isSuccess()? NotificationsType.SUCCESS : NotificationsType.WARNING);
+    }
+    
+    
     
     /**
      * Update and rollback action mapping.

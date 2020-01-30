@@ -16,8 +16,9 @@
 <portlet:actionURL name="createfileexc" var="createFileExcUrl" />
 <portlet:actionURL name="createfileoutttrans" var="createFileOutTransUrl" />
 <portlet:actionURL name="createfilenocommit" var="createFileNoCommitUrl" />
-
 <portlet:actionURL name="createblobs" var="createBlobsUrl" />
+<portlet:actionURL name="importfiles" var="importFilesUrl" />
+<portlet:actionURL name="createfolder" var="createFolderUrl" />
 <portlet:actionURL name="fetchPublicationInfo" var="fetchPublicationInfoUrl" />
 <portlet:actionURL name="updateAndCommit" var="updateAndCommitUrl" />
 <portlet:actionURL name="updateWithoutCommit" var="updateWithoutCommitUrl" />
@@ -85,13 +86,12 @@
     
 
     
-    <p>TESTS BLOB</p>
+    <p>TESTS FILE/BLOB</p>
     
     <a href="${createFileUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="CREATE_FILE" /></span>
     </a>
     
-
       
     <a href="${createFileExcUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="CREATE_FILE_EXCEPTION" /></span>
@@ -101,6 +101,17 @@
         <span><op:translate key="CREATE_FILE_OUT_TRANS" /></span>
     </a>
   
+  
+    <a href="${importFilesUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="IMPORT_FILES" /></span>
+    </a>
+    
+    
+    <a href="${createFolderUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="CREATE_FOLDER" /></span>
+    </a>
+
+    
     
    <p>TESTS CMS + LDAP (create/update note + create LDAP user)</p>
     

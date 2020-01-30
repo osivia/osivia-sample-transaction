@@ -38,9 +38,11 @@ import org.osivia.sample.transaction.model.Configuration;
 import org.osivia.sample.transaction.repository.command.CreateBlobCommand;
 import org.osivia.sample.transaction.repository.command.CreateBlobsCommand;
 import org.osivia.sample.transaction.repository.command.CreateFileCommand;
+import org.osivia.sample.transaction.repository.command.CreateFolderCommand;
 import org.osivia.sample.transaction.repository.command.DeleteCommand;
 import org.osivia.sample.transaction.repository.command.FetchPublicationInfoCommand;
 import org.osivia.sample.transaction.repository.command.GetTasksCommand;
+import org.osivia.sample.transaction.repository.command.ImportFilesCommand;
 import org.osivia.sample.transaction.repository.command.InitCommand;
 import org.osivia.sample.transaction.repository.command.OneCreationCommand;
 import org.osivia.sample.transaction.repository.command.CreateNoteAndUpdate;
@@ -249,6 +251,27 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
 
         return (Document) nuxeoController.executeNuxeoCommand(new CreateFileCommand(configuration, suffix, exception));
+
+    }
+    
+    
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws PortletException
+     */
+    @Override
+    public Document createFolder(PortalControllerContext portalControllerContext) throws PortletException {
+
+        // Configuration
+        Configuration configuration = this.getConfiguration(portalControllerContext);
+
+        // Nuxeo controller
+        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
+
+
+        return (Document) nuxeoController.executeNuxeoCommand(new CreateFolderCommand(configuration));
 
     }
 
@@ -480,4 +503,25 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws PortletException
+     */
+    @Override
+    public Documents importFiles(PortalControllerContext portalControllerContext) throws PortletException {
+
+        // Configuration
+        Configuration configuration = this.getConfiguration(portalControllerContext);
+
+        // Nuxeo controller
+        NuxeoController nuxeoController = this.getNuxeoController(portalControllerContext);
+
+
+        return (Documents) nuxeoController.executeNuxeoCommand(new ImportFilesCommand(configuration));
+
+    }
+
+    
+    
 }

@@ -21,6 +21,10 @@
             <name>portal.windowContentType</name>
             <value>portlet</value>
           </property>
+            <property>
+            <name>osivia.transaction.implicitCommits</name>
+            <value>false</value>
+          </property>          
         </properties>
         <height>0</height>
       </window>
