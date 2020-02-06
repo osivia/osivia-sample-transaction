@@ -406,6 +406,26 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
     }
     
     
+    @Override
+    public CommandNotification reminderUpdateCommit(PortalControllerContext portalControllerContext) throws PortletException {
+
+        // Internationalization bundle
+
+        CommandNotification commandNotification;
+
+        try {
+            transactionService.begin();
+            this.repository.updateReminderTask(portalControllerContext);
+            transactionService.commit();
+
+            commandNotification = new CommandNotification(true, "procedure updated");
+        } catch (Exception e) {
+            commandNotification = manageException("reminderUpdateCommit", e);
+        }
+
+        return commandNotification;
+    }
+    
 
     @Override
     public CommandNotification reminderStartNoTrans(PortalControllerContext portalControllerContext) throws PortletException {
@@ -437,7 +457,7 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
             this.repository.startReminderTask(portalControllerContext);
             transactionService.rollback();
 
-            commandNotification = new CommandNotification(true, "procedure rollback");
+            commandNotification = new CommandNotification(true, "procedure start rollback");
 
 
         } catch (Exception e) {
@@ -448,6 +468,28 @@ public class SampleTransactionServiceImpl implements SampleTransactionService {
     }
 
 
+    @Override
+    public CommandNotification reminderUpdateRollback(PortalControllerContext portalControllerContext) throws PortletException {
+
+        CommandNotification commandNotification;
+
+        try {
+ 
+            transactionService.begin();
+            this.repository.updateReminderTask(portalControllerContext);
+            transactionService.rollback();
+
+            commandNotification = new CommandNotification(true, "procedure update rollback");
+
+
+        } catch (Exception e) {
+            commandNotification = manageException("reminderUpdateRollback", e);
+        }
+
+        return commandNotification;
+    }
+    
+    
     @Override
     public CommandNotification init(PortalControllerContext portalControllerContext) throws PortletException {
         CommandNotification commandNotification;

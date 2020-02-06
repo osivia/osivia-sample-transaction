@@ -124,5 +124,11 @@ public interface SampleTransactionService {
 
 
     CommandNotification createFolder(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    CommandNotification reminderUpdateCommit(PortalControllerContext portalControllerContext) throws PortletException;
+
+
+    CommandNotification reminderUpdateRollback(PortalControllerContext portalControllerContext) throws PortletException;
     
 }

@@ -40,6 +40,7 @@ import org.osivia.sample.transaction.repository.command.CreateBlobsCommand;
 import org.osivia.sample.transaction.repository.command.CreateFileCommand;
 import org.osivia.sample.transaction.repository.command.CreateFolderCommand;
 import org.osivia.sample.transaction.repository.command.DeleteCommand;
+import org.osivia.sample.transaction.repository.command.DeleteSingleDocCommand;
 import org.osivia.sample.transaction.repository.command.FetchPublicationInfoCommand;
 import org.osivia.sample.transaction.repository.command.GetTasksCommand;
 import org.osivia.sample.transaction.repository.command.ImportFilesCommand;
@@ -460,6 +461,11 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                             this.formsService.proceed(portalControllerContext, task, "clear", variables);
                         } catch (Exception e) {
                             e.printStackTrace();
+                            
+                            // for reparing only
+                            nuxeoController.executeNuxeoCommand(new DeleteSingleDocCommand(task.getPath()));
+  
+                            
                             nbErrorsProceed++;
                         }
                     }
@@ -483,9 +489,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Override
     public void startReminderTask(PortalControllerContext portalControllerContext) throws PortletException {
 
-
         try {
-
             Map<String, String> variables = new HashMap<>();
 
             variables.put("recipient", portalControllerContext.getRequest().getRemoteUser());
@@ -498,10 +502,55 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         } catch (Exception e) {
             throw new PortletException(e);
         }
-
-
     }
 
+    
+    
+    @Override
+    public void updateReminderTask(PortalControllerContext portalControllerContext) throws PortletException {
+
+        List<Document> tasks = getTasks(portalControllerContext);
+
+        // Nuxeo controller
+        NuxeoController nuxeoController = new NuxeoController(portalControllerContext);
+        boolean updated = false;
+
+        try {
+
+            for (Document task : tasks) {
+
+                // Variables
+                Map<String, String> variables = new HashMap<>();
+
+                // variables.put("password", form.getPassword1());
+
+                Document denormTask = null;
+                try {
+                    denormTask = nuxeoController.getDocumentContext(task.getPath()).getDenormalizedDocument();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (denormTask != null) {
+                    if ("clear".equals(denormTask.getProperties().getString("nt:name"))) {
+
+                            this.formsService.proceed(portalControllerContext, task, "clear", variables);
+                            updated = true;
+                            break;
+
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            throw new PortletException(e);
+        }
+
+       if( !updated)
+           throw new PortletException("no task found");
+
+    }
+    
 
     /**
      * {@inheritDoc}

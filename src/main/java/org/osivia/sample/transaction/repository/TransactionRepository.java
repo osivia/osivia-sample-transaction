@@ -82,4 +82,7 @@ public interface TransactionRepository {
   
     Document createFolder(PortalControllerContext portalControllerContext) throws PortletException;
 
+
+    void updateReminderTask(PortalControllerContext portalControllerContext) throws PortletException;
+
 }

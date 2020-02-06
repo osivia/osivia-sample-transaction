@@ -25,7 +25,8 @@
 <portlet:actionURL name="updateAndRollback" var="updateAndRollbackUrl" />
 <portlet:actionURL name="reminderstartcommit" var="reminderStartCommitUrl" />
 <portlet:actionURL name="reminderstartrollback" var="reminderStartRollbackUrl" />
-
+<portlet:actionURL name="reminderupdatecommit" var="reminderUpdateCommitUrl" />
+<portlet:actionURL name="reminderupdaterollback" var="reminderUpdateRollbackUrl" />
 
 <portlet:actionURL name="init" var="initUrl" />
 
@@ -133,8 +134,17 @@
         <span><op:translate key="REMINDER_START_COMMIT" /></span>
     </a>
     
+        <a href="${reminderUpdateCommitUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="REMINDER_UPDATE_COMMIT" /></span>
+    </a>
+    
      <a href="${reminderStartRollbackUrl}" class="btn btn-primary no-ajax-link">
         <span><op:translate key="REMINDER_START_ROLLBACK" /></span>
     </a>
+    
+         <a href="${reminderUpdateRollbackUrl}" class="btn btn-primary no-ajax-link">
+        <span><op:translate key="REMINDER_UPDATE_ROLLBACK" /></span>
+    </a>
+    
 
 </p>
